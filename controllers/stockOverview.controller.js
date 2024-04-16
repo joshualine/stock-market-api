@@ -2,7 +2,7 @@ const StockOverview = require("../models/stockOverview.model");
 
 const getStockOverviews = async (req, res) => {
   try {
-    const stockoverviews = await StockOverview.find({});
+    const stockoverviews = await StockOverview.find({}).sort({_id:-1}).limit(1);
     res.status(200).json(stockoverviews);
   } catch (error) {
     res.status(500).json({ message: error.message });
