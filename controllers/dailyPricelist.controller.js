@@ -2,7 +2,7 @@ const DailyPricelist = require("../models/dailyPricelist.model");
 
 const getDailyPricelists = async (req, res) => {
   try {
-    const dailypricelists = await DailyPricelist.find({});
+    const dailypricelists = await DailyPricelist.find({}).sort({date: -1});
     res.status(200).json(dailypricelists);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -38,6 +38,9 @@ const StockOverviewSchema = mongoose.Schema(
     dealsPercent: {
       type: String,
     },
+    dates: {
+      type: String,
+    },
   },
   {
     timestamps: true,

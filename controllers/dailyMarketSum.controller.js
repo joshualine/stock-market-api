@@ -2,7 +2,7 @@ const DailyMarketSum = require("../models/dailyMarketSum.model");
 
 const getDailyMarketSums = async (req, res) => {
   try {
-    const dailymarketsums = await DailyMarketSum.find({});
+    const dailymarketsums = await DailyMarketSum.find({}).sort({date: -1});
     res.status(200).json(dailymarketsums);
   } catch (error) {
     res.status(500).json({ message: error.message });
