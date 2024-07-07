@@ -52,14 +52,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   // res.json({ message: 'File uploaded successfully' });
 
   try {
-    // Create a transporter object using the default SMTP transport
-    // let transporter = nodemailer.createTransport({
-    //   service: 'Gmail', // you can use other email services like Yahoo, Outlook, etc.
-    //   auth: {
-    //     user: 'joshuachinwendu@gmail.com', // replace with your email
-    //     pass: 'zsim wimu cntn nlxu'  // replace with your email password
-    //   }
-    // });
 
     const newFileName = req.body.fileName || req.file.originalname; // Get the new file name from the request
     const newFileNameFirst = req.body.fileNameFirst
