@@ -39,6 +39,24 @@ admin.initializeApp({
 const bucket = admin.storage().bucket();
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Configure Nodemailer
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'joshuachinwendu@gmail.com',
+//     pass: 'zsim wimu cntn nlxu'
+//   }
+// });
+let transporter = nodemailer.createTransport({
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SENDER_EMAIL, // replace with your custom email
+    pass: process.env.EMAIL_PASSWORD  // replace with your email password
+  }
+});
+
 app.post('/upload', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
@@ -56,7 +74,29 @@ app.post('/upload', upload.single('file'), (req, res) => {
   blobStream.on('finish', () => {
     blob.makePublic().then(() => {
       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-      res.status(200).send(publicUrl);
+
+      // Send email with attachment
+      const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: process.env.RECEIVER_EMAIL,
+        subject: 'File Upload',
+        text: 'A file has been uploaded.',
+        attachments: [
+          {
+            filename: req.file.originalname,
+            path: publicUrl
+          }
+        ]
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return res.status(500).send(error.toString());
+        }
+        res.status(200).send(publicUrl);
+      });
+
+      // res.status(200).send(publicUrl);
     });
   });
 
