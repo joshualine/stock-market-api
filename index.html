@@ -156,12 +156,12 @@
       event.preventDefault();
 
       // Show the loader
-      document.getElementById('loader').style.display = 'block';
+      // document.getElementById('loader').style.display = 'block';
 
       const formData = new FormData();
       formData.append('file', document.getElementById('fileInput').files[0]);
-      formData.append('fileName', document.getElementById('fileNameInput').value);
-      formData.append('fileNameFirst', document.getElementById('recipientName').value);
+      // formData.append('fileName', document.getElementById('fileNameInput').value);
+      // formData.append('fileNameFirst', document.getElementById('recipientName').value);
 
       const response = await fetch('/upload', {
         method: 'POST',
@@ -171,10 +171,10 @@
       const result = await response.json();
 
       // Hide the loader
-      document.getElementById('loader').style.display = 'none';
+      // document.getElementById('loader').style.display = 'none';
 
-      // alert(result.message);
-      window.location.href = '/';
+      alert(result.message);
+      // window.location.href = '/';
     });
   </script>
 
