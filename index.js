@@ -9,7 +9,8 @@ const path = require('path');
 const fs = require('fs');
 
 const admin = require('firebase-admin');
-const serviceAccount = require('./configs/firebase_config.json');
+const serviceAccount = require('./configs/firebase_config.js');
+// const serviceAccount = require('./configs/firebase_config.json');
 
 
 const stockOverviewRoute = require("./routes/stockOverview.route");
