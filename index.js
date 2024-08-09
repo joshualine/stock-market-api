@@ -39,7 +39,6 @@ admin.initializeApp({
 const bucket = admin.storage().bucket();
 const upload = multer({ storage: multer.memoryStorage() });
 
-
 let transporter = nodemailer.createTransport({
   host: 'smtp.office365.com',
   port: 587,
