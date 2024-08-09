@@ -39,12 +39,26 @@ admin.initializeApp({
 const bucket = admin.storage().bucket();
 const upload = multer({ storage: multer.memoryStorage() });
 
+
+let transporter = nodemailer.createTransport({
+  host: 'smtp.office365.com',
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SENDER_EMAIL, // replace with your custom email
+    pass: process.env.EMAIL_PASSWORD  // replace with your email password
+  }
+});
+
 app.post('/upload', upload.single('file'), (req, res) => {
+  const newFilename = req.body.filename;
+
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
   }
 
-  const blob = bucket.file(req.file.originalname);
+  // const blob = bucket.file(req.file.originalname);
+  const blob = bucket.file(newFilename);
   const blobStream = blob.createWriteStream({
     metadata: {
       contentType: req.file.mimetype
@@ -56,7 +70,31 @@ app.post('/upload', upload.single('file'), (req, res) => {
   blobStream.on('finish', () => {
     blob.makePublic().then(() => {
       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-      res.status(200).send(publicUrl);
+
+      // Send email with attachment
+      const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: process.env.RECEIVER_EMAIL,
+        subject: 'PUPLIC OFFER AND RIGHT ISSUE FORM',
+        // text: `Kindly find attached the completed form of ${newFilename}`,
+        text: `Kindly find attached the completed form uploaded`,
+        attachments: [
+          {
+            // filename: req.file.originalname,
+            filename: newFilename,
+            path: publicUrl
+          }
+        ]
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return res.status(500).send(error.toString());
+        }
+        res.status(200).send(publicUrl);
+      });
+
+      // res.status(200).send(publicUrl);
     });
   });
 
@@ -65,58 +103,10 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
 // \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-
-// ----------------------------Begining---------------------------------------------------------
-// Set storage engine
-// const storage = multer.diskStorage({
-//   destination: '/home/securitiesadmin/public_html/api/uploads',
-//   filename: function(req, file, cb){
-//     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-//   }
-// });
-
-// // Initialize upload
-// const upload = multer({
-//   storage: storage,
-//   limits: {fileSize: 10000000}, // 10MB limit
-//   fileFilter: function(req, file, cb){
-//     checkFileType(file, cb);
-//   }
-// }).single('myFile');
-
-// // Check file type
-// function checkFileType(file, cb){
-//   const filetypes = /jpeg|jpg|png|gif|pdf/;
-//   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//   const mimetype = filetypes.test(file.mimetype);
-
-//   if(mimetype && extname){
-//     return cb(null, true);
-//   } else {
-//     cb('Error: Images and PDFs Only!');
-//   }
-// }
-
-// // Route to handle file upload
-// app.post('/upload', (req, res) => {
-//   upload(req, res, (err) => {
-//     if(err){
-//       res.status(400).send(err);
-//     } else {
-//       if(req.file == undefined){
-//         res.status(400).send('No file selected');
-//       } else {
-//         res.send({
-//           message: 'File uploaded successfully',
-//           file: `uploads/${req.file.filename}`
-//         });
-//       }
-//     }
-//   });
-// });
-
-// -------------------------------Ending--------------------------------------------------------
-
+// respond with "hello world" when a GET request is made to the homepage
+app.get('/', (req, res) => {
+  res.send('API IS RUNNING...')
+})
 
 
 // routes
